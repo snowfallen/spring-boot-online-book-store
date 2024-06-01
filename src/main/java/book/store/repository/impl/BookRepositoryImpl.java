@@ -1,8 +1,8 @@
-package mate.academy.repository.impl;
+package book.store.repository.impl;
 
+import book.store.model.Book;
+import book.store.repository.BookRepository;
 import java.util.List;
-import mate.academy.model.Book;
-import mate.academy.repository.BookRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
