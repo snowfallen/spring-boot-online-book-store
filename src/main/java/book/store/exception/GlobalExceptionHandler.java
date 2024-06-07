@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<List<String>> handleValidationExceptions(
+    public ResponseEntity<List<String>> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex) {
 
         List<String> errors = ex.getBindingResult().getAllErrors().stream()
