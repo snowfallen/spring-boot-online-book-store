@@ -32,26 +32,30 @@ public class BookController {
         return bookService.save(bookDto);
     }
 
-    @Operation(summary = "Get book by id", description = "Get book by id")
+    @Operation(summary = "Get book by id",
+            description = "Get book details by its unique identifier (ID)")
     @GetMapping("/{id}")
     public BookDto getBookById(@PathVariable Long id) {
         return bookService.getBookById(id);
     }
 
-    @Operation(summary = "Get all books", description = "Get all books")
+    @Operation(summary = "Get all books",
+            description = "Retrieves a paginated list of all available books")
     @GetMapping
     public List<BookDto> getAll(Pageable pageable) {
         return bookService.getAll(pageable);
     }
 
-    @Operation(summary = "Update book by id", description = "Update book by id")
+    @Operation(summary = "Update book by id",
+            description = "Updates an existing book by id")
     @PutMapping("/{id}")
     public BookDto updateById(@PathVariable Long id,
                               @RequestBody @Valid CreateBookRequestDto bookDto) {
         return bookService.updateById(id, bookDto);
     }
 
-    @Operation(summary = "Delete book by id", description = "Delete book by id")
+    @Operation(summary = "Delete book by id",
+            description = "Soft deletes a book by its unique identifier (ID)")
     @DeleteMapping("/{id}")
     public BookDto deleteById(@PathVariable Long id) {
         return bookService.deleteById(id);
