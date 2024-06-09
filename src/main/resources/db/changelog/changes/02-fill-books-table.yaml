@@ -1,0 +1,425 @@
+databaseChangeLog:
+  - changeSet:
+      id: fill-books-table
+      author: snowfall
+      changes:
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: "title"
+                  value: "Sample Book 1"
+              - column:
+                  name: "author"
+                  value: "Author A"
+              - column:
+                  name: "isbn"
+                  value: "9781234567897"
+              - column:
+                  name: "price"
+                  value: "19.99"
+              - column:
+                  name: "description"
+                  value: "This is a sample book description."
+              - column:
+                  name: "cover_image"
+                  value: "https://example.com/cover1.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: "title"
+                  value: "Sample Book 2"
+              - column:
+                  name: "author"
+                  value: "Author B"
+              - column:
+                  name: "isbn"
+                  value: "9789876543210"
+              - column:
+                  name: "price"
+                  value: "24.99"
+              - column:
+                  name: "description"
+                  value: "This is a sample book description."
+              - column:
+                  name: "cover_image"
+                  value: "https://example.com/cover2.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: "title"
+                  value: "Sample Book 3"
+              - column:
+                  name: "author"
+                  value: "Author C"
+              - column:
+                  name: "isbn"
+                  value: "9781122334455"
+              - column:
+                  name: "price"
+                  value: "29.99"
+              - column:
+                  name: "description"
+                  value: "This is a sample book description."
+              - column:
+                  name: "cover_image"
+                  value: "https://example.com/cover3.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: "title"
+                  value: "Sample Book 4"
+              - column:
+                  name: "author"
+                  value: "Author D"
+              - column:
+                  name: "isbn"
+                  value: "9782233445566"
+              - column:
+                  name: "price"
+                  value: "34.99"
+              - column:
+                  name: "description"
+                  value: "This is a sample book description."
+              - column:
+                  name: "cover_image"
+                  value: "https://example.com/cover4.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: "title"
+                  value: "Sample Book 5"
+              - column:
+                  name: "author"
+                  value: "Author E"
+              - column:
+                  name: "isbn"
+                  value: "9783344556677"
+              - column:
+                  name: "price"
+                  value: "39.99"
+              - column:
+                  name: "description"
+                  value: "This is a sample book description."
+              - column:
+                  name: "cover_image"
+                  value: "https://example.com/cover5.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: "title"
+                  value: "Sample Book 6"
+              - column:
+                  name: "author"
+                  value: "Author F"
+              - column:
+                  name: "isbn"
+                  value: "9784455667788"
+              - column:
+                  name: "price"
+                  value: "44.99"
+              - column:
+                  name: "description"
+                  value: "This is a sample book description."
+              - column:
+                  name: "cover_image"
+                  value: "https://example.com/cover6.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: "title"
+                  value: "Sample Book 7"
+              - column:
+                  name: "author"
+                  value: "Author G"
+              - column:
+                  name: "isbn"
+                  value: "9785566778899"
+              - column:
+                  name: "price"
+                  value: "49.99"
+              - column:
+                  name: "description"
+                  value: "This is a sample book description."
+              - column:
+                  name: "cover_image"
+                  value: "https://example.com/cover7.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: "title"
+                  value: "Sample Book 8"
+              - column:
+                  name: "author"
+                  value: "Author H"
+              - column:
+                  name: "isbn"
+                  value: "9786677889900"
+              - column:
+                  name: "price"
+                  value: "54.99"
+              - column:
+                  name: "description"
+                  value: "This is a sample book description."
+              - column:
+                  name: "cover_image"
+                  value: "https://example.com/cover8.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: "title"
+                  value: "Sample Book 9"
+              - column:
+                  name: "author"
+                  value: "Author I"
+              - column:
+                  name: "isbn"
+                  value: "9787788990011"
+              - column:
+                  name: "price"
+                  value: "59.99"
+              - column:
+                  name: "description"
+                  value: "This is a sample book description."
+              - column:
+                  name: "cover_image"
+                  value: "https://example.com/cover9.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: "title"
+                  value: "Sample Book 10"
+              - column:
+                  name: "author"
+                  value: "Author J"
+              - column:
+                  name: "isbn"
+                  value: "9788899001122"
+              - column:
+                  name: "price"
+                  value: "64.99"
+              - column:
+                  name: "description"
+                  value: "This is a sample book description."
+              - column:
+                  name: "cover_image"
+                  value: "https://example.com/cover10.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: "title"
+                  value: "Sample Book 11"
+              - column:
+                  name: "author"
+                  value: "Author K"
+              - column:
+                  name: "isbn"
+                  value: "9789900112233"
+              - column:
+                  name: "price"
+                  value: "69.99"
+              - column:
+                  name: "description"
+                  value: "This is a sample book description."
+              - column:
+                  name: "cover_image"
+                  value: "https://example.com/cover11.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: "title"
+                  value: "Sample Book 12"
+              - column:
+                  name: "author"
+                  value: "Author L"
+              - column:
+                  name: "isbn"
+                  value: "9781011223344"
+              - column:
+                  name: "price"
+                  value: "74.99"
+              - column:
+                  name: "description"
+                  value: "This is a sample book description."
+              - column:
+                  name: "cover_image"
+                  value: "https://example.com/cover12.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: "title"
+                  value: "Sample Book 13"
+              - column:
+                  name: "author"
+                  value: "Author M"
+              - column:
+                  name: "isbn"
+                  value: "9781112334455"
+              - column:
+                  name: "price"
+                  value: "79.99"
+              - column:
+                  name: "description"
+                  value: "This is a sample book description."
+              - column:
+                  name: "cover_image"
+                  value: "https://example.com/cover13.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: "title"
+                  value: "Sample Book 14"
+              - column:
+                  name: "author"
+                  value: "Author N"
+              - column:
+                  name: "isbn"
+                  value: "9781223445566"
+              - column:
+                  name: "price"
+                  value: "84.99"
+              - column:
+                  name: "description"
+                  value: "This is a sample book description."
+              - column:
+                  name: "cover_image"
+                  value: "https://example.com/cover14.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: "title"
+                  value: "Sample Book 15"
+              - column:
+                  name: "author"
+                  value: "Author O"
+              - column:
+                  name: "isbn"
+                  value: "9781334556677"
+              - column:
+                  name: "price"
+                  value: "89.99"
+              - column:
+                  name: "description"
+                  value: "This is a sample book description."
+              - column:
+                  name: "cover_image"
+                  value: "https://example.com/cover15.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: "title"
+                  value: "Sample Book 16"
+              - column:
+                  name: "author"
+                  value: "Author P"
+              - column:
+                  name: "isbn"
+                  value: "9781445667788"
+              - column:
+                  name: "price"
+                  value: "94.99"
+              - column:
+                  name: "description"
+                  value: "This is a sample book description."
+              - column:
+                  name: "cover_image"
+                  value: "https://example.com/cover16.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: "title"
+                  value: "Sample Book 17"
+              - column:
+                  name: "author"
+                  value: "Author Q"
+              - column:
+                  name: "isbn"
+                  value: "9781556778899"
+              - column:
+                  name: "price"
+                  value: "99.99"
+              - column:
+                  name: "description"
+                  value: "This is a sample book description."
+              - column:
+                  name: "cover_image"
+                  value: "https://example.com/cover17.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: "title"
+                  value: "Sample Book 18"
+              - column:
+                  name: "author"
+                  value: "Author R"
+              - column:
+                  name: "isbn"
+                  value: "9781667889900"
+              - column:
+                  name: "price"
+                  value: "104.99"
+              - column:
+                  name: "description"
+                  value: "This is a sample book description."
+              - column:
+                  name: "cover_image"
+                  value: "https://example.com/cover18.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: "title"
+                  value: "Sample Book 19"
+              - column:
+                  name: "author"
+                  value: "Author S"
+              - column:
+                  name: "isbn"
+                  value: "9781778990011"
+              - column:
+                  name: "price"
+                  value: "109.99"
+              - column:
+                  name: "description"
+                  value: "This is a sample book description."
+              - column:
+                  name: "cover_image"
+                  value: "https://example.com/cover19.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: "title"
+                  value: "Sample Book 20"
+              - column:
+                  name: "author"
+                  value: "Author T"
+              - column:
+                  name: "isbn"
+                  value: "9781889001122"
+              - column:
+                  name: "price"
+                  value: "114.99"
+              - column:
+                  name: "description"
+                  value: "This is a sample book description."
+              - column:
+                  name: "cover_image"
+                  value: "https://example.com/cover20.jpg"
