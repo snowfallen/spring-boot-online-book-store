@@ -14,16 +14,21 @@ import lombok.Getter;
 @Getter
 public class UserRegistrationRequestDto {
     @Email
+    @NotBlank
+    @Size(min = 8, max = 255)
     private String email;
     @NotBlank
-    @Size(min = 8, max = 32)
+    @Size(min = 8, max = 255)
     private String password;
     @NotBlank
-    @Size(min = 8, max = 32)
+    @Size(min = 8, max = 255)
     private String repeatPassword;
     @NotBlank
+    @Size(min = 2, max = 255)
     private String firstName;
     @NotBlank
+    @Size(min = 2, max = 255)
     private String lastName;
+    @Size(min = 2, max = 255)
     private String shippingAddress;
 }
