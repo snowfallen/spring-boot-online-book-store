@@ -3,7 +3,7 @@ package book.store.controller;
 import book.store.dto.user.UserRegistrationRequestDto;
 import book.store.dto.user.UserResponseDto;
 import book.store.exception.RegistrationException;
-import book.store.service.UserService;
+import book.store.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
