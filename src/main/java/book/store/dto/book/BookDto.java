@@ -1,9 +1,12 @@
-package book.store.dto;
+package book.store.dto.book;
 
 import java.math.BigDecimal;
-import lombok.Data;
 
-@Data
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class BookDto {
     private Long id;
     private String title;
