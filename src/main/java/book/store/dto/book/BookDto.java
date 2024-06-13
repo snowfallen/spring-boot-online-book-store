@@ -1,7 +1,6 @@
 package book.store.dto.book;
 
 import java.math.BigDecimal;
-
 import lombok.Getter;
 import lombok.Setter;
 
