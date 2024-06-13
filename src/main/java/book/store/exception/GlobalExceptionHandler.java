@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RegistrationException.class)
     public ResponseEntity<List<String>> handleRegistrationException(
             RegistrationException ex) {
-        return new ResponseEntity<>(List.of(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(List.of(ex.getMessage()), HttpStatus.CONFLICT);
     }
 
     private String getErrorMessage(ObjectError error) {
