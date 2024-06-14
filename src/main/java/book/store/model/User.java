@@ -24,7 +24,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Setter
 @Table(name = "users")
 public class User implements UserDetails {
-    private static final String ROLE_PREFIX = "ROLE_";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,7 +45,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-                .map(r -> new SimpleGrantedAuthority(ROLE_PREFIX + r.getName().name()))
+                .map(r -> new SimpleGrantedAuthority(r.getName().name()))
                 .toList();
     }
 

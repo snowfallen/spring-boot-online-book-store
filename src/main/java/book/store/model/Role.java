@@ -30,7 +30,7 @@ public class Role {
     private boolean isDeleted = false;
 
     public enum RoleName {
-        ADMIN,
-        USER
+        ROLE_ADMIN,
+        ROLE_USER
     }
 }

@@ -32,7 +32,7 @@ class UserServiceImpl implements UserService {
             throw new RegistrationException(USER_ALREADY_EXIST);
         }
 
-        Role userRole = roleRepository.findRoleByName(Role.RoleName.USER)
+        Role userRole = roleRepository.findRoleByName(Role.RoleName.ROLE_USER)
                 .orElseThrow(() -> new RegistrationException(CANT_FIND_ROLE_BY_NAME));
         Set<Role> defaultUserRoleSet = new HashSet<>();
         defaultUserRoleSet.add(userRole);
