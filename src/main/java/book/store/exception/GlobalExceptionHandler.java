@@ -22,6 +22,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(RegistrationException.class)
+    public ResponseEntity<List<String>> handleRegistrationException(
+            RegistrationException ex) {
+        return new ResponseEntity<>(List.of(ex.getMessage()), HttpStatus.CONFLICT);
+    }
+
     private String getErrorMessage(ObjectError error) {
         if (error instanceof FieldError fieldError) {
             String field = fieldError.getField();
