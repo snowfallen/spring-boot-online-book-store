@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: fill-users-table
+      author: snowfall
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column: {name: "email", value: "admin.book.store@gmail.com"}
+              - column: {name: "password", value: "$2a$10$KKM8IJrkLZMF2tNzPQkYfuNpA9ZGd1oIu.yFLU.qCrDDC/gFciiPK"}
+              - column: {name: "first_name", value: "Bob"}
+              - column: {name: "last_name", value: "Johnson"}
+              - column: {name: "shipping_address", value: "London 1/12"}
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: "email", value: "user.book.store@gmail.com" }
+              - column: { name: "password", value: "$2a$10$KKM8IJrkLZMF2tNzPQkYfuNpA9ZGd1oIu.yFLU.qCrDDC/gFciiPK" }
+              - column: { name: "first_name", value: "John" }
+              - column: { name: "last_name", value: "Bobson" }
+              - column: { name: "shipping_address", value: "Eden 12/1" }
+
