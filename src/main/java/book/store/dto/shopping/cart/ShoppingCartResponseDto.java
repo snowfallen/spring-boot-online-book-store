@@ -2,10 +2,13 @@ package book.store.dto.shopping.cart;
 
 import book.store.dto.cart.item.CartItemResponseDto;
 import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
 
-public record ShoppingCartResponseDto(
-        Long id,
-        Long userId,
-        Set<CartItemResponseDto> cartItems
-) {
+@Getter
+@Setter
+public class ShoppingCartResponseDto {
+    private Long id;
+    private Long userId;
+    private Set<CartItemResponseDto> cartItems;
 }
