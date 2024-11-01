@@ -27,11 +27,11 @@ public class ShoppingCart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    @OneToMany(mappedBy = "shoppingCart", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "shoppingCart", orphanRemoval = true)
     private Set<CartItem> cartItems = new HashSet<>();
-    @Column(name = "is_deleted", nullable = false, columnDefinition = "TINYINT")
+    @Column(nullable = false, columnDefinition = "TINYINT")
     private boolean isDeleted = false;
 }
