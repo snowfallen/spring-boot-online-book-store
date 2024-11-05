@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Positive;
 
 public record CartItemUpdateQuantityDto(
         @Positive
-        @NotNull
         int quantity
 ) {
 }
