@@ -1,5 +1,6 @@
 package book.store.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -30,7 +31,7 @@ public class ShoppingCart {
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    @OneToMany(mappedBy = "shoppingCart", orphanRemoval = true)
+    @OneToMany(mappedBy = "shoppingCart", orphanRemoval = true, cascade = CascadeType.ALL)
     private Set<CartItem> cartItems = new HashSet<>();
     @Column(nullable = false, columnDefinition = "TINYINT")
     private boolean isDeleted = false;

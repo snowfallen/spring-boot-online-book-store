@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,8 +45,9 @@ public class ShoppingCartController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping
     public ShoppingCartResponseDto addCartItem(
+            Authentication authentication,
             @RequestBody @Valid CartItemRequestDto cartItemRequestDto) {
-        return shoppingCartService.addCartItem(cartItemRequestDto);
+        return shoppingCartService.addCartItem(cartItemRequestDto, authentication);
     }
 
     @Operation(summary = "Get shopping cart",
@@ -61,8 +63,8 @@ public class ShoppingCartController {
     })
     @PreAuthorize("hasRole('USER')")
     @GetMapping
-    public ShoppingCartResponseDto getShoppingCart() {
-        return shoppingCartService.get();
+    public ShoppingCartResponseDto getShoppingCart(Authentication authentication) {
+        return shoppingCartService.get(authentication);
     }
 
     @Operation(summary = "Update a cart item by ID",
@@ -82,9 +84,10 @@ public class ShoppingCartController {
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/items/{id}")
     public ShoppingCartResponseDto updateCartItemBy(
+            Authentication authentication,
             @RequestBody @Valid CartItemUpdateQuantityDto updateQuantityDto,
             @PathVariable Long id) {
-        return shoppingCartService.update(updateQuantityDto, id);
+        return shoppingCartService.update(updateQuantityDto, id, authentication);
     }
 
     @Operation(summary = "Delete a cart item by ID",
@@ -101,7 +104,7 @@ public class ShoppingCartController {
     })
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/items/{id}")
-    public void deleteCartItemById(@PathVariable Long id) {
-        shoppingCartService.delete(id);
+    public void deleteCartItemById(@PathVariable Long id, Authentication authentication) {
+        shoppingCartService.delete(id, authentication);
     }
 }

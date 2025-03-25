@@ -3,7 +3,6 @@ package book.store.service.user.impl;
 import book.store.dto.user.UserRegistrationRequestDto;
 import book.store.dto.user.UserResponseDto;
 import book.store.event.user.UserRegisteredEvent;
-import book.store.exception.EntityNotFoundException;
 import book.store.exception.RegistrationException;
 import book.store.mapper.UserMapper;
 import book.store.model.Role;
@@ -15,7 +14,6 @@ import java.util.HashSet;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,16 +48,6 @@ class UserServiceImpl implements UserService {
         eventPublisher.publishEvent(new UserRegisteredEvent(this, savedUser));
 
         return userMapper.toDto(savedUser);
-    }
-
-    @Override
-    public User getAuthUser() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findUserByEmail(username)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        CAN_T_FIND_USER_WITH_ACCORDING_USERNAME + username
-                )
-        );
     }
 
     private Set<Role> setDafaultRoleSet() throws RegistrationException {
