@@ -3,6 +3,7 @@ package book.store.controller;
 import book.store.dto.cart.item.CartItemRequestDto;
 import book.store.dto.cart.item.CartItemUpdateQuantityDto;
 import book.store.dto.shopping.cart.ShoppingCartResponseDto;
+import book.store.model.User;
 import book.store.service.shopping.cart.ShoppingCartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -47,7 +48,8 @@ public class ShoppingCartController {
     public ShoppingCartResponseDto addCartItem(
             Authentication authentication,
             @RequestBody @Valid CartItemRequestDto cartItemRequestDto) {
-        return shoppingCartService.addCartItem(cartItemRequestDto, authentication);
+        User authenticatedUser = (User) authentication.getPrincipal();
+        return shoppingCartService.addCartItem(cartItemRequestDto, authenticatedUser.getId());
     }
 
     @Operation(summary = "Get shopping cart",
@@ -64,7 +66,8 @@ public class ShoppingCartController {
     @PreAuthorize("hasRole('USER')")
     @GetMapping
     public ShoppingCartResponseDto getShoppingCart(Authentication authentication) {
-        return shoppingCartService.get(authentication);
+        User authenticatedUser = (User) authentication.getPrincipal();
+        return shoppingCartService.get(authenticatedUser.getId());
     }
 
     @Operation(summary = "Update a cart item by ID",
@@ -87,7 +90,8 @@ public class ShoppingCartController {
             Authentication authentication,
             @RequestBody @Valid CartItemUpdateQuantityDto updateQuantityDto,
             @PathVariable Long id) {
-        return shoppingCartService.update(updateQuantityDto, id, authentication);
+        User authenticatedUser = (User) authentication.getPrincipal();
+        return shoppingCartService.update(updateQuantityDto, id,authenticatedUser.getId());
     }
 
     @Operation(summary = "Delete a cart item by ID",
@@ -105,6 +109,7 @@ public class ShoppingCartController {
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/items/{id}")
     public void deleteCartItemById(@PathVariable Long id, Authentication authentication) {
-        shoppingCartService.delete(id, authentication);
+        User authenticatedUser = (User) authentication.getPrincipal();
+        shoppingCartService.delete(id, authenticatedUser.getId());
     }
 }

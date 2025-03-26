@@ -4,7 +4,6 @@ import book.store.dto.book.BookDto;
 import book.store.dto.book.BookDtoWithoutCategoryIds;
 import book.store.dto.book.BookSearchParametersDto;
 import book.store.dto.book.CreateBookRequestDto;
-import book.store.model.Book;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 
@@ -22,6 +21,4 @@ public interface BookService {
     List<BookDto> search(BookSearchParametersDto bookSearchParametersDto, Pageable pageable);
 
     List<BookDtoWithoutCategoryIds> getBooksByCategoryId(Long id, Pageable pageable);
-
-    Book getBookById(Long id);
 }

@@ -34,6 +34,9 @@ public interface BookMapper {
     @Mapping(target = "categories", ignore = true)
     Book toModel(CreateBookRequestDto requestDto);
 
+    @Mapping(target = "categories", ignore = true)
+    Book toModel(BookDto bookDto);
+
     @AfterMapping
     default void setCategories(@MappingTarget Book book, CreateBookRequestDto requestDto) {
         Set<Category> categories = requestDto.getCategoryIds()
