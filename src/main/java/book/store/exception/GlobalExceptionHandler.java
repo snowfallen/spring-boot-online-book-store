@@ -36,6 +36,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(List.of(ex.getMessage()), HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
     private String getErrorMessage(ObjectError error) {
         if (error instanceof FieldError fieldError) {
             String field = fieldError.getField();

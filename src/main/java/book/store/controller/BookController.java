@@ -38,7 +38,7 @@ public class BookController {
             description = "Get book details by its unique identifier (ID)")
     @GetMapping("/{id}")
     public BookDto getBookById(@PathVariable Long id) {
-        return bookService.getBookById(id);
+        return bookService.getBookDtoById(id);
     }
 
     @Operation(summary = "Get all books",
