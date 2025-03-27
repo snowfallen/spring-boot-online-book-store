@@ -1,0 +1,92 @@
+package book.store.service.order.impl;
+
+import book.store.dto.order.OrderRequestDto;
+import book.store.dto.order.OrderResponseDto;
+import book.store.dto.order.UpdateOrderStatusRequestDto;
+import book.store.exception.EntityNotFoundException;
+import book.store.mapper.OrderMapper;
+import book.store.model.CartItem;
+import book.store.model.Order;
+import book.store.model.OrderItem;
+import book.store.model.ShoppingCart;
+import book.store.repository.order.OrderRepository;
+import book.store.repository.shopping.cart.ShoppingCartRepository;
+import book.store.service.order.OrderService;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class OrderServiceImpl implements OrderService {
+    private static final String CAN_T_FIND_SHOPPING_CART_FOR_USER
+            = "Can't find shopping cart for user: ";
+    private static final String CAN_T_FIND_ORDER_BY_ID
+            = "Can't find order by id: ";
+
+    private final OrderRepository orderRepository;
+    private final ShoppingCartRepository shoppingCartRepository;
+    private final OrderMapper orderMapper;
+
+    @Override
+    @Transactional
+    public OrderResponseDto createOrder(OrderRequestDto requestDto, Long userId) {
+        ShoppingCart shoppingCart = shoppingCartRepository.findByUserId(userId).orElseThrow(
+                () -> new EntityNotFoundException(CAN_T_FIND_SHOPPING_CART_FOR_USER + userId));
+        
+        Order order = new Order();
+        order.setUser(shoppingCart.getUser());
+        order.setStatus(Order.Status.PENDING);
+        order.setOrderDate(LocalDateTime.now());
+        order.setShippingAddress(requestDto.getShippingAddress());
+        order.setOrderItems(getOrderItemsFromCart(order, shoppingCart.getCartItems()));
+        order.setTotal(calculateTotal(order.getOrderItems()));
+        
+        Order savedOrder = orderRepository.save(order);
+        shoppingCart.getCartItems().clear();
+        shoppingCartRepository.save(shoppingCart);
+        return orderMapper.toDto(savedOrder);
+    }
+
+    @Override
+    public List<OrderResponseDto> getOrders(Long userId, Pageable pageable) {
+        return orderRepository.findAllByUserId(userId, pageable)
+                .stream()
+                .map(orderMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public OrderResponseDto updateOrderStatus(Long id, UpdateOrderStatusRequestDto requestDto) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(CAN_T_FIND_ORDER_BY_ID + id));
+        order.setStatus(requestDto.getStatus());
+        return orderMapper.toDto(orderRepository.save(order));
+    }
+
+    private Set<OrderItem> getOrderItemsFromCart(Order order, Set<CartItem> cartItems) {
+        return cartItems.stream()
+                .map(cartItem -> {
+                    OrderItem orderItem = new OrderItem();
+                    orderItem.setOrder(order);
+                    orderItem.setBook(cartItem.getBook());
+                    orderItem.setQuantity(cartItem.getQuantity());
+                    orderItem.setPrice(cartItem.getBook().getPrice());
+                    return orderItem;
+                })
+                .collect(Collectors.toSet());
+    }
+
+    private BigDecimal calculateTotal(Set<OrderItem> orderItems) {
+        return orderItems.stream()
+                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+}
