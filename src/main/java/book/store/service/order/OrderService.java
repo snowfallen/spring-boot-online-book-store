@@ -1,5 +1,6 @@
 package book.store.service.order;
 
+import book.store.dto.order.OrderItemResponseDto;
 import book.store.dto.order.OrderRequestDto;
 import book.store.dto.order.OrderResponseDto;
 import book.store.dto.order.UpdateOrderStatusRequestDto;
@@ -8,8 +9,12 @@ import org.springframework.data.domain.Pageable;
 
 public interface OrderService {
     OrderResponseDto createOrder(OrderRequestDto requestDto, Long userId);
-    
+
     List<OrderResponseDto> getOrders(Long userId, Pageable pageable);
-    
+
     OrderResponseDto updateOrderStatus(Long id, UpdateOrderStatusRequestDto requestDto);
+
+    List<OrderItemResponseDto> getOrderItems(Long orderId, Pageable pageable);
+
+    OrderItemResponseDto getOrderItem(Long orderId, Long itemId);
 } 

@@ -1,14 +1,17 @@
 package book.store.service.order.impl;
 
+import book.store.dto.order.OrderItemResponseDto;
 import book.store.dto.order.OrderRequestDto;
 import book.store.dto.order.OrderResponseDto;
 import book.store.dto.order.UpdateOrderStatusRequestDto;
 import book.store.exception.EntityNotFoundException;
+import book.store.mapper.OrderItemMapper;
 import book.store.mapper.OrderMapper;
 import book.store.model.CartItem;
 import book.store.model.Order;
 import book.store.model.OrderItem;
 import book.store.model.ShoppingCart;
+import book.store.repository.order.OrderItemRepository;
 import book.store.repository.order.OrderRepository;
 import book.store.repository.shopping.cart.ShoppingCartRepository;
 import book.store.service.order.OrderService;
@@ -25,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+    private static final String CAN_T_FIND_ORDER_ITEM_WITH_ID
+            = "Can't find order item with id: ";
     private static final String CAN_T_FIND_SHOPPING_CART_FOR_USER
             = "Can't find shopping cart for user: ";
     private static final String CAN_T_FIND_ORDER_BY_ID
@@ -32,6 +37,8 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final ShoppingCartRepository shoppingCartRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final OrderItemMapper orderItemMapper;
     private final OrderMapper orderMapper;
 
     @Override
@@ -69,6 +76,21 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new EntityNotFoundException(CAN_T_FIND_ORDER_BY_ID + id));
         order.setStatus(requestDto.getStatus());
         return orderMapper.toDto(orderRepository.save(order));
+    }
+
+    @Override
+    public List<OrderItemResponseDto> getOrderItems(Long orderId, Pageable pageable) {
+        return orderItemRepository.findAllByOrderId(orderId, pageable)
+                .stream()
+                .map(orderItemMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public OrderItemResponseDto getOrderItem(Long orderId, Long itemId) {
+        return orderItemMapper.toDto(orderItemRepository.findByIdAndOrderId(itemId, orderId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        CAN_T_FIND_ORDER_ITEM_WITH_ID + itemId)));
     }
 
     private Set<OrderItem> getOrderItemsFromCart(Order order, Set<CartItem> cartItems) {
