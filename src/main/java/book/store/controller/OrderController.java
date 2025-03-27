@@ -1,9 +1,11 @@
 package book.store.controller;
 
+import book.store.dto.order.OrderItemResponseDto;
 import book.store.dto.order.OrderRequestDto;
 import book.store.dto.order.OrderResponseDto;
 import book.store.dto.order.UpdateOrderStatusRequestDto;
 import book.store.model.User;
+import book.store.service.order.OrderItemService;
 import book.store.service.order.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/orders")
 public class OrderController {
     private final OrderService orderService;
+    private final OrderItemService orderItemService;
 
     @Operation(summary = "Place a new order",
             description = "Place a new order based on user's shopping cart")
@@ -58,5 +61,27 @@ public class OrderController {
             @RequestBody @Valid UpdateOrderStatusRequestDto requestDto
     ) {
         return orderService.updateOrderStatus(id, requestDto);
+    }
+
+    @Operation(summary = "Get all items in an order",
+            description = "Retrieve all items for a specific order")
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/{orderId}/items")
+    public List<OrderItemResponseDto> getOrderItems(
+            @PathVariable Long orderId,
+            Pageable pageable
+    ) {
+        return orderItemService.getOrderItems(orderId, pageable);
+    }
+
+    @Operation(summary = "Get specific item in an order",
+            description = "Retrieve specific item from an order by its ID")
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/{orderId}/items/{itemId}")
+    public OrderItemResponseDto getOrderItem(
+            @PathVariable Long orderId,
+            @PathVariable Long itemId
+    ) {
+        return orderItemService.getOrderItem(orderId, itemId);
     }
 } 
