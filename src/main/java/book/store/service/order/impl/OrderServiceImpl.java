@@ -5,6 +5,7 @@ import book.store.dto.order.OrderRequestDto;
 import book.store.dto.order.OrderResponseDto;
 import book.store.dto.order.UpdateOrderStatusRequestDto;
 import book.store.exception.EntityNotFoundException;
+import book.store.exception.OrderProcessingException;
 import book.store.mapper.OrderItemMapper;
 import book.store.mapper.OrderMapper;
 import book.store.model.CartItem;
@@ -16,7 +17,6 @@ import book.store.repository.order.OrderRepository;
 import book.store.repository.shopping.cart.ShoppingCartRepository;
 import book.store.service.order.OrderService;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
     private static final String CAN_T_FIND_ORDER_ITEM_WITH_ID
@@ -34,6 +35,8 @@ public class OrderServiceImpl implements OrderService {
             = "Can't find shopping cart for user: ";
     private static final String CAN_T_FIND_ORDER_BY_ID
             = "Can't find order by id: ";
+    private static final String EMPTY_SHOPPING_CART
+            = "Cannot create order with empty shopping cart";
 
     private final OrderRepository orderRepository;
     private final ShoppingCartRepository shoppingCartRepository;
@@ -42,23 +45,24 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
 
     @Override
-    @Transactional
     public OrderResponseDto createOrder(OrderRequestDto requestDto, Long userId) {
         ShoppingCart shoppingCart = shoppingCartRepository.findByUserId(userId).orElseThrow(
                 () -> new EntityNotFoundException(CAN_T_FIND_SHOPPING_CART_FOR_USER + userId));
         
+        if (shoppingCart.getCartItems().isEmpty()) {
+            throw new OrderProcessingException(EMPTY_SHOPPING_CART);
+        }
+        
         Order order = new Order();
         order.setUser(shoppingCart.getUser());
-        order.setStatus(Order.Status.PENDING);
-        order.setOrderDate(LocalDateTime.now());
         order.setShippingAddress(requestDto.getShippingAddress());
         order.setOrderItems(getOrderItemsFromCart(order, shoppingCart.getCartItems()));
         order.setTotal(calculateTotal(order.getOrderItems()));
         
-        Order savedOrder = orderRepository.save(order);
+        orderRepository.save(order);
         shoppingCart.getCartItems().clear();
         shoppingCartRepository.save(shoppingCart);
-        return orderMapper.toDto(savedOrder);
+        return orderMapper.toDto(order);
     }
 
     @Override
@@ -70,7 +74,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Transactional
     public OrderResponseDto updateOrderStatus(Long id, UpdateOrderStatusRequestDto requestDto) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(CAN_T_FIND_ORDER_BY_ID + id));
