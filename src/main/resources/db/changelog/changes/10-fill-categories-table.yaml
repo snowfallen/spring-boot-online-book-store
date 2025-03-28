@@ -13,4 +13,3 @@ databaseChangeLog:
             columns:
               - column: { name: "name", value: "Romance" }
               - column: { name: "description", value: "Books in the romance genre" }
-

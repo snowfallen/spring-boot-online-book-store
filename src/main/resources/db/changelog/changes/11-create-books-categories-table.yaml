@@ -24,4 +24,3 @@ databaseChangeLog:
                     referencedColumnNames: id
                     nullable: false
                     primaryKey: true
-
