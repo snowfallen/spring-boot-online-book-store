@@ -19,4 +19,3 @@ databaseChangeLog:
               - column: { name: "first_name", value: "John" }
               - column: { name: "last_name", value: "Bobson" }
               - column: { name: "shipping_address", value: "Eden 12/1" }
-
