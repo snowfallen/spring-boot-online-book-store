@@ -10,11 +10,8 @@ services:
       - MYSQL_USER=$MYSQL_USER
       - MYSQL_PASSWORD=$MYSQL_PASSWORD
       - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
-      - TZ=$TZ
     ports:
       - $MYSQL_LOCAL_PORT:$MYSQL_DOCKER_PORT
-    networks:
-      - app
 
   app:
     build: .
@@ -26,6 +23,7 @@ services:
       - ./.env
     ports:
       - $SPRING_LOCAL_PORT:$SPRING_DOCKER_PORT
+      - $DEBUG_PORT:$DEBUG_PORT
     environment:
       SPRING_APPLICATION_JSON: '{
                   "spring.datasource.url" : "jdbc:mysql://mysql:$MYSQL_DOCKER_PORT/$MYSQL_DB",
@@ -33,13 +31,4 @@ services:
                   "spring.datasource.password" : "$MYSQL_PASSWORD",
                   "spring.jpa.hibernate.ddl-auto" : "validate"
                 }'
-      TZ: $TZ
-    networks:
-      - monitoring
-      - app
-
-networks:
-  monitoring:
-    driver: bridge
-  app:
-    driver: bridge
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:$DEBUG_PORT"
