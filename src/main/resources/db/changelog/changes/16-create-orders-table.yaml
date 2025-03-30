@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: create-books-table
+      id: create-orders-table
       author: snowfall
       changes:
         - createTable:
-            tableName: books
+            tableName: orders
             columns:
               - column:
                   name: id
@@ -14,35 +14,36 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: title
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_orders_users
+                    referencedTableName: users
+                    referencedColumnNames: id
+              - column:
+                  name: status
                   type: varchar(255)
                   constraints:
                     nullable: false
               - column:
-                  name: author
-                  type: varchar(255)
+                  name: total
+                  type: decimal(10,2)
                   constraints:
                     nullable: false
               - column:
-                  name: isbn
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-                    unique: true
-              - column:
-                  name: price
-                  type: DECIMAL
+                  name: order_date
+                  type: datetime
                   constraints:
                     nullable: false
               - column:
-                  name: description
+                  name: shipping_address
                   type: varchar(255)
-              - column:
-                  name: cover_image
-                  type: varchar(255)
+                  constraints:
+                    nullable: false
               - column:
                   name: is_deleted
                   type: boolean
                   defaultValueBoolean: false
                   constraints:
-                    nullable: false
+                    nullable: false 

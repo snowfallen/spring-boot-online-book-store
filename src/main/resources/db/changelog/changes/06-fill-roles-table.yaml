@@ -11,4 +11,3 @@ databaseChangeLog:
             tableName: roles
             columns:
               - column: {name: "name", value: "ROLE_USER"}
-
