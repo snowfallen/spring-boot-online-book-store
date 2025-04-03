@@ -6,9 +6,11 @@ import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.util.Set;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 @Getter
+@Setter
 public class CreateBookRequestDto {
     @NotBlank
     @Length(min = 2)
