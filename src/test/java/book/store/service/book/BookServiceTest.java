@@ -1,10 +1,17 @@
 package book.store.service.book;
 
+import static book.store.util.TestUtil.TEST_BOOK_AUTHOR;
+import static book.store.util.TestUtil.TEST_BOOK_ID;
+import static book.store.util.TestUtil.TEST_BOOK_TITLE;
+import static book.store.util.TestUtil.TEST_CATEGORY_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import book.store.dto.book.BookDto;
@@ -17,10 +24,9 @@ import book.store.model.Book;
 import book.store.repository.book.BookRepository;
 import book.store.repository.book.BookSpecificationBuilder;
 import book.store.service.book.impl.BookServiceImpl;
-import java.math.BigDecimal;
+import book.store.util.TestUtil;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,14 +41,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 @ExtendWith(MockitoExtension.class)
 class BookServiceTest {
-    private static final Long TEST_BOOK_ID = 1L;
-    private static final Long TEST_CATEGORY_ID = 1L;
-    private static final String TEST_BOOK_TITLE = "Test Book";
-    private static final String TEST_BOOK_AUTHOR = "Test Author";
-    private static final String TEST_BOOK_ISBN = "1234567890123";
-    private static final BigDecimal TEST_BOOK_PRICE = BigDecimal.valueOf(19.99);
-    private static final String TEST_BOOK_DESCRIPTION = "Test Description";
-    private static final String TEST_BOOK_COVER_IMAGE = "test.jpg";
     private static final int PAGE_SIZE = 10;
     private static final int PAGE_NUMBER = 0;
 
@@ -59,47 +57,62 @@ class BookServiceTest {
     @Test
     @DisplayName("Get book by id when book exists")
     void getBookById_WithExistingBook_ReturnsBookDto() {
-        Book book = createTestBook();
-        BookDto expectedDto = createTestBookDto();
+        Book bookFromRepo = TestUtil.createTestBook();
+        bookFromRepo.setId(TEST_BOOK_ID);
+        BookDto expectedDto = TestUtil.createTestBookDto();
 
-        when(bookRepository.findById(TEST_BOOK_ID)).thenReturn(Optional.of(book));
-        when(bookMapper.toDto(book)).thenReturn(expectedDto);
+        when(bookRepository.findById(TEST_BOOK_ID)).thenReturn(Optional.of(bookFromRepo));
+        when(bookMapper.toDto(bookFromRepo)).thenReturn(expectedDto);
 
         BookDto actual = bookService.getBookDtoById(TEST_BOOK_ID);
 
         assertEquals(expectedDto, actual);
+        verify(bookRepository, times(1)).findById(TEST_BOOK_ID);
+        verify(bookMapper, times(1)).toDto(bookFromRepo);
     }
 
     @Test
     @DisplayName("Get book by id when book doesn't exist throws exception")
     void getBookById_WithNonExistingBook_ThrowsException() {
         when(bookRepository.findById(TEST_BOOK_ID)).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> bookService.getBookDtoById(TEST_BOOK_ID));
+
+        assertThrows(
+                EntityNotFoundException.class, () -> bookService.getBookDtoById(TEST_BOOK_ID)
+        );
+        verify(bookRepository, times(1)).findById(TEST_BOOK_ID);
+        verify(bookMapper, never()).toDto(any(Book.class));
     }
 
     @Test
     @DisplayName("Create book with valid data returns created book")
     void createBook_WithValidData_ReturnsCreatedBook() {
-        CreateBookRequestDto requestDto = createTestBookRequestDto();
-        Book book = createTestBook();
-        BookDto expectedDto = createTestBookDto();
+        CreateBookRequestDto requestDto = TestUtil.createValidBookRequestDto();
+        Book bookToSave = TestUtil.createTestBook();
+        Book savedBook = TestUtil.createTestBook();
+        savedBook.setId(TEST_BOOK_ID);
+        BookDto expectedDto = TestUtil.createTestBookDto();
 
-        when(bookMapper.toModel(requestDto)).thenReturn(book);
-        when(bookRepository.save(book)).thenReturn(book);
-        when(bookMapper.toDto(book)).thenReturn(expectedDto);
+        when(bookMapper.toModel(requestDto)).thenReturn(bookToSave);
+        when(bookRepository.save(bookToSave)).thenReturn(savedBook);
+        when(bookMapper.toDto(savedBook)).thenReturn(expectedDto);
 
         BookDto actual = bookService.save(requestDto);
 
         assertEquals(expectedDto, actual);
+        verify(bookMapper, times(1)).toModel(requestDto);
+        verify(bookRepository, times(1)).save(bookToSave);
+        verify(bookMapper, times(1)).toDto(savedBook);
     }
 
     @Test
     @DisplayName("Get all books returns page of books")
     void getAllBooks_ReturnsPageOfBooks() {
         Pageable pageable = PageRequest.of(PAGE_NUMBER, PAGE_SIZE);
-        List<Book> books = List.of(createTestBook(), createTestBook());
+        Book testBook = TestUtil.createTestBook();
+        testBook.setId(TEST_BOOK_ID);
+        List<Book> books = List.of(testBook);
         Page<Book> bookPage = new PageImpl<>(books, pageable, books.size());
-        List<BookDto> expectedDtos = List.of(createTestBookDto(), createTestBookDto());
+        List<BookDto> expectedDtos = List.of(TestUtil.createTestBookDto());
 
         when(bookRepository.findAll(pageable)).thenReturn(bookPage);
         when(bookMapper.toDtoList(bookPage)).thenReturn(expectedDtos);
@@ -108,6 +121,8 @@ class BookServiceTest {
 
         assertEquals(expectedDtos.size(), actual.size());
         assertEquals(expectedDtos, actual);
+        verify(bookRepository, times(1)).findAll(pageable);
+        verify(bookMapper, times(1)).toDtoList(bookPage);
     }
 
     @Test
@@ -118,31 +133,38 @@ class BookServiceTest {
                 new String[]{TEST_BOOK_AUTHOR}
         );
         Pageable pageable = PageRequest.of(PAGE_NUMBER, PAGE_SIZE);
-        List<Book> books = List.of(createTestBook());
+        Book testBook = TestUtil.createTestBook();
+        testBook.setId(TEST_BOOK_ID);
+        List<Book> books = List.of(testBook);
         Page<Book> bookPage = new PageImpl<>(books, pageable, books.size());
-        List<BookDto> expectedDtos = List.of(createTestBookDto());
+        List<BookDto> expectedDtos = List.of(TestUtil.createTestBookDto());
 
         Specification<Book> mockSpec = mock(Specification.class);
-        when(bookSpecificationBuilder.build(any(BookSearchParametersDto.class)))
-                .thenReturn(mockSpec);
-        when(bookRepository.findAll(any(Specification.class), any(Pageable.class)))
-                .thenReturn(bookPage);
-        when(bookMapper.toDtoList(any(Page.class))).thenReturn(expectedDtos);
+        when(bookSpecificationBuilder.build(params)).thenReturn(mockSpec);
+        when(bookRepository.findAll(mockSpec, pageable)).thenReturn(bookPage);
+        when(bookMapper.toDtoList(bookPage)).thenReturn(expectedDtos);
 
         List<BookDto> actual = bookService.search(params, pageable);
 
-        assertEquals(1, actual.size());
+        assertEquals(expectedDtos.size(), actual.size());
+        assertEquals(expectedDtos, actual);
+        verify(bookSpecificationBuilder, times(1)).build(params);
+        verify(bookRepository, times(1)).findAll(mockSpec, pageable);
+        verify(bookMapper, times(1)).toDtoList(bookPage);
     }
 
     @Test
     @DisplayName("Get books by category id")
     void getBooksByCategoryId_WithValidId_ReturnsBooks() {
         Pageable pageable = PageRequest.of(PAGE_NUMBER, PAGE_SIZE);
-        List<Book> books = List.of(createTestBook());
-        BookDtoWithoutCategoryIds expectedDto = createTestBookDtoWithoutCategoryIds();
+        Book testBook = TestUtil.createTestBook();
+        testBook.setId(TEST_BOOK_ID);
+        List<Book> booksFromRepo = List.of(testBook);
+        BookDtoWithoutCategoryIds expectedDto = TestUtil.createTestBookDtoWithoutCategoryIds();
 
-        when(bookRepository.findAllBooksByCategoryId(TEST_CATEGORY_ID, pageable)).thenReturn(books);
-        when(bookMapper.toBookDtoWithoutCategoryIdsList(books))
+        when(bookRepository.findAllBooksByCategoryId(TEST_CATEGORY_ID, pageable))
+                .thenReturn(booksFromRepo);
+        when(bookMapper.toBookDtoWithoutCategoryIdsList(booksFromRepo))
                 .thenReturn(List.of(expectedDto));
 
         List<BookDtoWithoutCategoryIds> actual =
@@ -151,89 +173,66 @@ class BookServiceTest {
         assertNotNull(actual);
         assertEquals(1, actual.size());
         assertEquals(expectedDto, actual.get(0));
+        verify(bookRepository, times(1))
+                .findAllBooksByCategoryId(TEST_CATEGORY_ID, pageable);
+        verify(bookMapper, times(1))
+                .toBookDtoWithoutCategoryIdsList(booksFromRepo);
     }
 
     @Test
     @DisplayName("Update book updates all fields")
     void updateBook_UpdatesAllFields() {
-        Book book = createTestBook();
-        CreateBookRequestDto requestDto = createTestBookRequestDto();
-        BookDto expectedDto = createTestBookDto();
+        Book existingBook = TestUtil.createTestBook();
+        existingBook.setId(TEST_BOOK_ID);
 
-        when(bookRepository.findById(TEST_BOOK_ID)).thenReturn(Optional.of(book));
-        when(bookRepository.save(book)).thenReturn(book);
-        when(bookMapper.toDto(book)).thenReturn(expectedDto);
+        CreateBookRequestDto requestDto = TestUtil.createValidBookRequestDto();
+        Book bookAfterUpdate = TestUtil.createTestBook();
+        bookAfterUpdate.setId(TEST_BOOK_ID);
+        bookAfterUpdate.setTitle(requestDto.getTitle());
+        bookAfterUpdate.setAuthor(requestDto.getAuthor());
+        bookAfterUpdate.setIsbn(requestDto.getIsbn());
+        bookAfterUpdate.setPrice(requestDto.getPrice());
+        bookAfterUpdate.setDescription(requestDto.getDescription());
+        bookAfterUpdate.setCoverImage(requestDto.getCoverImage());
+
+        BookDto expectedDto = TestUtil.createTestBookDto();
+
+        when(bookRepository.findById(TEST_BOOK_ID)).thenReturn(Optional.of(existingBook));
+        when(bookRepository.save(any(Book.class))).thenReturn(bookAfterUpdate);
+        when(bookMapper.toDto(any(Book.class))).thenReturn(expectedDto);
 
         BookDto actual = bookService.updateById(TEST_BOOK_ID, requestDto);
 
         assertEquals(expectedDto, actual);
-        assertEquals(TEST_BOOK_TITLE, book.getTitle());
-        assertEquals(TEST_BOOK_AUTHOR, book.getAuthor());
-        assertEquals(TEST_BOOK_ISBN, book.getIsbn());
-        assertEquals(TEST_BOOK_DESCRIPTION, book.getDescription());
-        assertEquals(TEST_BOOK_COVER_IMAGE, book.getCoverImage());
+
+        assertEquals(requestDto.getTitle(), existingBook.getTitle());
+        assertEquals(requestDto.getAuthor(), existingBook.getAuthor());
+        assertEquals(requestDto.getIsbn(), existingBook.getIsbn());
+        assertEquals(requestDto.getPrice(), existingBook.getPrice());
+        assertEquals(requestDto.getDescription(), existingBook.getDescription());
+        assertEquals(requestDto.getCoverImage(), existingBook.getCoverImage());
+
+        verify(bookRepository, times(1)).findById(TEST_BOOK_ID);
+        verify(bookRepository, times(1)).save(existingBook);
+        verify(bookMapper, times(1)).toDto(bookAfterUpdate);
     }
 
     @Test
     @DisplayName("Delete book by id")
     void deleteById_WithExistingBook_ReturnsDeletedBook() {
-        Book book = createTestBook();
-        BookDto expectedDto = createTestBookDto();
+        Book bookToDelete = TestUtil.createTestBook();
+        bookToDelete.setId(TEST_BOOK_ID);
+        BookDto expectedDto = TestUtil.createTestBookDto();
 
-        when(bookRepository.findById(TEST_BOOK_ID)).thenReturn(Optional.of(book));
-        when(bookRepository.save(book)).thenReturn(book);
-        when(bookMapper.toDto(book)).thenReturn(expectedDto);
+        when(bookRepository.findById(TEST_BOOK_ID)).thenReturn(Optional.of(bookToDelete));
+        when(bookRepository.save(bookToDelete)).thenReturn(bookToDelete);
+        when(bookMapper.toDto(bookToDelete)).thenReturn(expectedDto);
 
         BookDto actual = bookService.deleteById(TEST_BOOK_ID);
 
         assertEquals(expectedDto, actual);
-    }
-
-    private Book createTestBook() {
-        Book book = new Book();
-        book.setId(TEST_BOOK_ID);
-        book.setTitle(TEST_BOOK_TITLE);
-        book.setAuthor(TEST_BOOK_AUTHOR);
-        book.setIsbn(TEST_BOOK_ISBN);
-        book.setPrice(TEST_BOOK_PRICE);
-        book.setDescription(TEST_BOOK_DESCRIPTION);
-        book.setCoverImage(TEST_BOOK_COVER_IMAGE);
-        return book;
-    }
-
-    private BookDto createTestBookDto() {
-        BookDto bookDto = new BookDto();
-        bookDto.setId(TEST_BOOK_ID);
-        bookDto.setTitle(TEST_BOOK_TITLE);
-        bookDto.setAuthor(TEST_BOOK_AUTHOR);
-        bookDto.setIsbn(TEST_BOOK_ISBN);
-        bookDto.setPrice(TEST_BOOK_PRICE);
-        bookDto.setDescription(TEST_BOOK_DESCRIPTION);
-        bookDto.setCoverImage(TEST_BOOK_COVER_IMAGE);
-        return bookDto;
-    }
-
-    private BookDtoWithoutCategoryIds createTestBookDtoWithoutCategoryIds() {
-        BookDtoWithoutCategoryIds bookDto = new BookDtoWithoutCategoryIds();
-        bookDto.setId(TEST_BOOK_ID);
-        bookDto.setTitle(TEST_BOOK_TITLE);
-        bookDto.setAuthor(TEST_BOOK_AUTHOR);
-        bookDto.setIsbn(TEST_BOOK_ISBN);
-        bookDto.setPrice(TEST_BOOK_PRICE);
-        bookDto.setDescription(TEST_BOOK_DESCRIPTION);
-        bookDto.setCoverImage(TEST_BOOK_COVER_IMAGE);
-        return bookDto;
-    }
-
-    private CreateBookRequestDto createTestBookRequestDto() {
-        CreateBookRequestDto requestDto = new CreateBookRequestDto();
-        requestDto.setTitle(TEST_BOOK_TITLE);
-        requestDto.setAuthor(TEST_BOOK_AUTHOR);
-        requestDto.setIsbn(TEST_BOOK_ISBN);
-        requestDto.setPrice(TEST_BOOK_PRICE);
-        requestDto.setDescription(TEST_BOOK_DESCRIPTION);
-        requestDto.setCoverImage(TEST_BOOK_COVER_IMAGE);
-        requestDto.setCategoryIds(Set.of(1L, 2L));
-        return requestDto;
+        verify(bookRepository, times(1)).findById(TEST_BOOK_ID);
+        verify(bookRepository, times(1)).save(bookToDelete);
+        verify(bookMapper, times(1)).toDto(bookToDelete);
     }
 }
