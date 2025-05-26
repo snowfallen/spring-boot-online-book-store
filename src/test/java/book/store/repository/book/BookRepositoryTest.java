@@ -6,13 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import book.store.config.TestConfig;
 import book.store.model.Book;
-import book.store.model.Category;
 import book.store.util.TestUtil;
-import jakarta.persistence.EntityManager;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,31 +15,22 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.jdbc.Sql;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Sql(scripts = "/database/repository/add-category-and-three-books.sql",
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+)
+@Sql(scripts = "/database/repository/clean-up-data.sql",
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
+)
 class BookRepositoryTest extends TestConfig {
     private static final int EXPECTED_BOOKS_WITH_CATEGORY = 3;
     private static final int PAGE_SIZE = 10;
 
     @Autowired
     private BookRepository bookRepository;
-    @Autowired
-    private EntityManager entityManager;
-
-    @BeforeEach
-    void setUp() {
-        Category category = TestUtil.createTestCategory();
-        entityManager.persist(category);
-        
-        Book book = TestUtil.createTestBook();
-        Set<Category> categories = new HashSet<>();
-        categories.add(category);
-        book.setCategories(categories);
-
-        entityManager.persist(book);
-        entityManager.flush();
-    }
 
     @Test
     @DisplayName("Find all books by category when category exists")

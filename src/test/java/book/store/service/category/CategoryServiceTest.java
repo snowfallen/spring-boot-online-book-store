@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -199,20 +200,24 @@ class CategoryServiceTest {
     @Test
     @DisplayName("Delete category when category exists returns deleted category")
     void deleteCategory_WithExistingCategory_ReturnsDeletedCategory() {
-        Category category = TestUtil.createTestCategory();
-        category.setId(TEST_CATEGORY_ID);
+        Category categoryEntity = TestUtil.createTestCategory();
+        categoryEntity.setId(TEST_CATEGORY_ID);
+
         CategoryDto expectedDto = TestUtil.createTestCategoryDto();
 
-        when(categoryRepository.findById(TEST_CATEGORY_ID)).thenReturn(Optional.of(category));
-        when(categoryRepository.save(category)).thenReturn(category);
-        when(categoryMapper.toDto(category)).thenReturn(expectedDto);
+        when(categoryRepository.findById(TEST_CATEGORY_ID)).thenReturn(Optional.of(categoryEntity));
+        when(categoryMapper.toDto(argThat(cat ->
+                cat.getId().equals(TEST_CATEGORY_ID) && cat.isDeleted()
+        ))).thenReturn(expectedDto);
 
         CategoryDto actual = categoryService.deleteById(TEST_CATEGORY_ID);
 
         assertEquals(expectedDto, actual);
         verify(categoryRepository, times(1)).findById(TEST_CATEGORY_ID);
-        verify(categoryRepository, times(1)).save(category);
-        verify(categoryMapper, times(1)).toDto(category);
+        verify(categoryRepository, times(1)).delete(categoryEntity);
+        verify(categoryMapper, times(1)).toDto(argThat(cat ->
+                cat.getId().equals(TEST_CATEGORY_ID) && cat.isDeleted()
+        ));
     }
 
     @Test
@@ -223,15 +228,14 @@ class CategoryServiceTest {
         CategoryDto dummyDto = TestUtil.createTestCategoryDto();
 
         when(categoryRepository.findById(TEST_CATEGORY_ID)).thenReturn(Optional.of(category));
-        when(categoryRepository.save(category)).thenReturn(category);
-        when(categoryMapper.toDto(category)).thenReturn(dummyDto);
+        when(categoryMapper.toDto(argThat(Category::isDeleted))).thenReturn(dummyDto);
 
         categoryService.deleteById(TEST_CATEGORY_ID);
 
         assertTrue(category.isDeleted());
         verify(categoryRepository, times(1)).findById(TEST_CATEGORY_ID);
-        verify(categoryRepository, times(1)).save(category);
-        verify(categoryMapper, times(1)).toDto(category);
+        verify(categoryRepository, times(1)).delete(category);
+        verify(categoryMapper, times(1)).toDto(argThat(Category::isDeleted));
     }
 
     @Test
@@ -242,7 +246,7 @@ class CategoryServiceTest {
         assertThrows(EntityNotFoundException.class,
                 () -> categoryService.deleteById(TEST_CATEGORY_ID));
         verify(categoryRepository, times(1)).findById(TEST_CATEGORY_ID);
-        verify(categoryRepository, never()).save(any(Category.class));
+        verify(categoryRepository, never()).delete(any(Category.class));
         verify(categoryMapper, never()).toDto(any(Category.class));
     }
 }

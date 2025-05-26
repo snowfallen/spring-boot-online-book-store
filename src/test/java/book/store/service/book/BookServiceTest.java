@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -220,19 +221,23 @@ class BookServiceTest {
     @Test
     @DisplayName("Delete book by id")
     void deleteById_WithExistingBook_ReturnsDeletedBook() {
-        Book bookToDelete = TestUtil.createTestBook();
-        bookToDelete.setId(TEST_BOOK_ID);
+        Book bookEntityFromDb = TestUtil.createTestBook();
+        bookEntityFromDb.setId(TEST_BOOK_ID);
+
         BookDto expectedDto = TestUtil.createTestBookDto();
 
-        when(bookRepository.findById(TEST_BOOK_ID)).thenReturn(Optional.of(bookToDelete));
-        when(bookRepository.save(bookToDelete)).thenReturn(bookToDelete);
-        when(bookMapper.toDto(bookToDelete)).thenReturn(expectedDto);
+        when(bookRepository.findById(TEST_BOOK_ID)).thenReturn(Optional.of(bookEntityFromDb));
+        when(bookMapper.toDto(argThat(book ->
+                book.getId().equals(TEST_BOOK_ID) && book.isDeleted()
+        ))).thenReturn(expectedDto);
 
-        BookDto actual = bookService.deleteById(TEST_BOOK_ID);
+        BookDto actualDto = bookService.deleteById(TEST_BOOK_ID);
 
-        assertEquals(expectedDto, actual);
+        assertEquals(expectedDto, actualDto);
         verify(bookRepository, times(1)).findById(TEST_BOOK_ID);
-        verify(bookRepository, times(1)).save(bookToDelete);
-        verify(bookMapper, times(1)).toDto(bookToDelete);
+        verify(bookRepository, times(1)).delete(bookEntityFromDb);
+        verify(bookMapper, times(1)).toDto(argThat(book ->
+                book.getId().equals(TEST_BOOK_ID) && book.isDeleted()
+        ));
     }
 }
