@@ -86,7 +86,8 @@ class BookControllerTest {
     @Test
     @WithMockUser(roles = {"ADMIN"})
     @SqlMergeMode(SqlMergeMode.MergeMode.OVERRIDE)
-    @Sql(scripts = "/database/controller/delete-all-books.sql",
+    @Sql(scripts = {"/database/controller/delete-all-books.sql",
+            "/database/controller/insert-default-category.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @DisplayName("Create book with valid data returns created book")
     void createBook_WithValidData_ReturnsCreatedBook() throws Exception {
