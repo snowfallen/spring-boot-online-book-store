@@ -31,7 +31,7 @@ databaseChangeLog:
                     unique: true
               - column:
                   name: price
-                  type: DECIMAL
+                  type: DECIMAL(19, 2)
                   constraints:
                     nullable: false
               - column:
