@@ -46,8 +46,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto deleteById(Long id) {
         Category category = getCategory(id);
+        categoryRepository.delete(category);
         category.setDeleted(true);
-        return categoryMapper.toDto(categoryRepository.save(category));
+        return categoryMapper.toDto(category);
     }
 
     private Category getCategory(Long id) {
