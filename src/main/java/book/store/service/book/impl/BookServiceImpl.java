@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -52,11 +53,14 @@ public class BookServiceImpl implements BookService {
         return bookMapper.toDto(bookRepository.save(bookToUpdate));
     }
 
+    @Transactional
     @Override
     public BookDto deleteById(Long id) {
         Book bookToDelete = getBookById(id);
+        bookRepository.delete(bookToDelete);
         bookToDelete.setDeleted(true);
-        return bookMapper.toDto(bookRepository.save(bookToDelete));
+
+        return bookMapper.toDto(bookToDelete);
     }
 
     @Override
